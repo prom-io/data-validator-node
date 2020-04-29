@@ -29,8 +29,7 @@ encryption of uploaded data using the Data Owner's public key.
 
 ## How to test
 
-[Here](http://178.128.240.29/) is an instance of app, which is alreay deployed at the stage environent for the demo purposes. 
-So you can test all the essence features of the application using UI: 
+Run the node (see below) and test all the essence features of the application using UI: 
 - upload Data Owners' files with their metadata;
 - browse uploaded Data Owners' files list;
 - browse the sales transactions list;
