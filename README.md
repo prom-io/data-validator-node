@@ -20,7 +20,8 @@
 
 Data Validator node is an application which is responsible 
 for aggregation and validation of the data from the Data Owners and provide 
-it to Prometeus ecosystem. It provides RESTful API  and user interface for uploading data. 
+it to other Nodes in Stoa: Data Exchange Platform within Prometeus ecosystem. 
+It provides RESTful API  and user interface for uploading data. 
 The Node uploads data of Data Owners to the Prometeus network using API
 of Service Node so that it can become available for purchase to Data marts. 
 The payment for the storage of that data is charged at the moment of upload 
