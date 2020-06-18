@@ -7,12 +7,11 @@ import {DataOwnersRepository} from "./DataOwnersRepository";
 import {InitialAccountRegistrationHandler} from "./InitialAccountRegistrationHandler";
 import {ServiceNodeApiClientModule} from "../service-node-api";
 import {Web3Module} from "../web3";
-import {UsersModule} from "../users/UsersModule";
 
 @Module({
     controllers: [AccountsController],
     providers: [AccountsService, AccountsRepository, DataOwnersService, DataOwnersRepository, InitialAccountRegistrationHandler],
-    imports: [ServiceNodeApiClientModule, Web3Module, UsersModule],
+    imports: [ServiceNodeApiClientModule, Web3Module],
     exports: [DataOwnersService, DataOwnersRepository, AccountsRepository, AccountsService]
 })
 export class AccountsModule {}

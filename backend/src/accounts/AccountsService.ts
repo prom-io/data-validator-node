@@ -9,20 +9,17 @@ import {RegisterAccountRequest, ServiceNodeApiClient} from "../service-node-api"
 import {EntityType} from "../nedb/entity";
 import {Web3Wrapper} from "../web3";
 import {AccountRegistrationStatusResponse} from "../service-node-api/types/response";
-import {UsersService} from "../users";
 
 @Injectable()
 export class AccountsService {
     constructor(private readonly accountsRepository: AccountsRepository,
                 private readonly serviceNodeClient: ServiceNodeApiClient,
-                private readonly web3Wrapper: Web3Wrapper,
-                private readonly usersService: UsersService) {
+                private readonly web3Wrapper: Web3Wrapper) {
     }
 
     public async createDataValidatorAccount(createDataValidatorAccountRequest: CreateDataValidatorRequest): Promise<void> {
         try {
             const defaultAccount: boolean = (await this.accountsRepository.findAll()).filter(account => account.default).length === 0;
-            console.log(createDataValidatorAccountRequest);
             const accountRegistrationStatusResponse: AccountRegistrationStatusResponse = (
                 await this.serviceNodeClient.isAccountRegistered(createDataValidatorAccountRequest.address)
             ).data;
@@ -34,11 +31,6 @@ export class AccountsService {
                         privateKey: createDataValidatorAccountRequest.privateKey,
                         _type: EntityType.ACCOUNT,
                         default: defaultAccount
-                    });
-                    await this.usersService.saveUser({
-                        address: createDataValidatorAccountRequest.address,
-                        privateKey: createDataValidatorAccountRequest.privateKey,
-                        username: createDataValidatorAccountRequest.username
                     });
                     return;
                 } else {
@@ -61,11 +53,6 @@ export class AccountsService {
                 privateKey: createDataValidatorAccountRequest.privateKey,
                 _type: EntityType.ACCOUNT,
                 default: defaultAccount
-            });
-            await this.usersService.saveUser({
-                address: createDataValidatorAccountRequest.address,
-                privateKey: createDataValidatorAccountRequest.privateKey,
-                username: createDataValidatorAccountRequest.username
             });
         } catch (error) {
             if (error instanceof HttpException) {

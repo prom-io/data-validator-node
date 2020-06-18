@@ -1,8 +1,4 @@
 version: '3.5'
-networks:
-  ignite-dds_kafka-net:
-    external:
-      name: ignite-dds_kafka-net
 services:
   frontend:
     build:
@@ -10,7 +6,7 @@ services:
       dockerfile: ./front-end/Dockerfile
     depends_on:
       - backend
-     # - encryptor
+      - encryptor
     working_dir: /usr/src/app
     env_file:
       - .env
@@ -18,25 +14,12 @@ services:
     - ${REACT_APP_PRODUCTION_PORT}:${REACT_APP_PRODUCTION_PORT}
     tty: true
     network_mode: host
-  postgres:
-    image: postgres:latest
+  encryptor:
+    build:
+      context: .
+      dockerfile: encryptor.docker
     volumes:
-      - pg-data:/var/lib/postgresql/data
-    expose:
-      - 5433
-    environment:
-      - POSTGRES_USER=${DATABASE_USERNAME}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=${DATABASE_NAME}
-    ports:
-      - "5433:5433"
-    restart: unless-stopped
- # encryptor:
- #   build:
- #     context: .
- #     dockerfile: encryptor.docker
- #   volumes:
- #     - ./encryptor:/var/www/encryptor
+      - ./encryptor:/var/www/encryptor
   backend:
     build:
       context: .
@@ -51,10 +34,7 @@ services:
     ports:
     - ${DATA_VALIDATOR_API_PORT}:${DATA_VALIDATOR_API_PORT}
 #    network_mode: host
-    depends_on:
-      - postgres
     networks:
       - default
-      - ignite-dds_kafka-net
 volumes:
   pg-data: {}
