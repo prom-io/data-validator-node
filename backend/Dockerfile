@@ -3,8 +3,6 @@ WORKDIR /var/www/api
 
 COPY ./backend/package.json ./
 COPY ./backend ./
-RUN apt-get update
-RUN apt-get -y install graphicsmagick
 RUN yarn global add @nestjs/cli
 RUN yarn install
 

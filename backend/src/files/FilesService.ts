@@ -97,7 +97,6 @@ export class FilesService {
                 id: serviceNodeResponse.id,
                 fileKey
             };
-            console.log(serviceNodeFile);
             await this.serviceNodeTemporaryFilesRepository.save(serviceNodeFile);
             return serviceNodeResponse;
         } catch (error) {

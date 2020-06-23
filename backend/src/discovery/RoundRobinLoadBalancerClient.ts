@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {Injectable, OnModuleInit} from "@nestjs/common";
 import {Cron, NestSchedule} from "nest-schedule";
 import {LoggerService} from "nest-logger";
 import Axios from "axios";
@@ -8,7 +8,7 @@ import {BootstrapNodesContainer} from "./BootstrapNodesContainer";
 import {getRandomElement} from "../utils/random-element";
 
 @Injectable()
-export class RoundRobinLoadBalancerClient extends NestSchedule {
+export class RoundRobinLoadBalancerClient extends NestSchedule implements OnModuleInit {
     private nodeInstances: RegisteredNodeInstance[] = [];
     private selectedNodeIndex = 0;
 
@@ -57,5 +57,9 @@ export class RoundRobinLoadBalancerClient extends NestSchedule {
         this.log.info("Refreshing list of registered nodes");
         const randomBootstrapNode: BootstrapNode = getRandomElement(this.bootstrapNodesContainer.getBootstrapNodes());
         this.nodeInstances = (await Axios.get(`http://${randomBootstrapNode.ipAddress}:${randomBootstrapNode.port}/api/v1/discovery/nodes`)).data;
+    }
+
+    public async onModuleInit(): Promise<void> {
+        await this.refreshInstances();
     }
 }
