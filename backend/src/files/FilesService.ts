@@ -64,7 +64,7 @@ export class FilesService {
         createServiceNodeFileRequest: ICreateServiceNodeFileRequest
     ): Promise<ServiceNodeFileResponse> {
         try {
-            const data = fileSystem.readFileSync(`${config.LOCAL_FILES_DIRECTORY}/${localFileId}`).toString("base64");
+            const data = fileSystem.readFileSync(`${config.LOCAL_FILES_DIRECTORY}/${localFileId}`).toString();
             const dataEncrypted = (await this.encryptorService.encryptWithAes({content: data})).data;
             const serviceNodeFileResponse = await this.createServiceNodeFile(createServiceNodeFileRequest, {
                 key: dataEncrypted.result.key,
