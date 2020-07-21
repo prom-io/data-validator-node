@@ -11,6 +11,7 @@
 - [BalancesResponse](#balancesresponse)
 - [ServiceNodeFileResponse](#servicenodefileresponse)
 - [FileUploadStatusResponse](#fileuploadstatusresponse)
+- [TransactionResponse](#transactionresponse)
 
 ### AccountResponse
 
@@ -106,5 +107,20 @@
     price?: number, //Price of the file
     dataOwner?: string, //Created data owner account
     privateKey?: string //Private key of the file
+}
+````
+
+### TransactionResponse
+
+````
+{
+    dataMart?: string,
+    sum: number,
+    dataOwner: DataOwnerResponse,
+    file: FileResponse,
+    hash: string,
+    createdAt: string,
+    type: "dataUpload" | "dataPurchase",
+    serviceNode: string
 }
 ````

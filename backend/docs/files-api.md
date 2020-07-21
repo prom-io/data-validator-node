@@ -171,7 +171,7 @@ GET /api/v3/files/:serviceNodeFileId/status
 
 #### Response type
 
-Returns [FileUploadStatusResponse](https://github.com/Prometeus-Network/data-validator-node/blob/develop/backend/docs/api-types.md#fileuploadstatusresponse) object where key is wallet address and value is its balance
+Returns [FileUploadStatusResponse](https://github.com/Prometeus-Network/data-validator-node/blob/develop/backend/docs/api-types.md#fileuploadstatusresponse) object
 
 ### Delete local file from Service Node
 
