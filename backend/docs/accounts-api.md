@@ -20,7 +20,7 @@ GET /api/v3/accounts
 
 #### Response type
 
-Returns array of [AccountsResponse]
+Returns array of [AccountResponse](https://github.com/Prometeus-Network/data-validator-node/blob/develop/backend/docs/api-types.md#accountresponse)
 
 ### Create new data validator account
 
@@ -57,7 +57,7 @@ GET /api/v3/accounts/data-validators/:dataValidatorAddress/data-owners
 
 #### Response type
 
-Returns [DataOwnersOfDataValidatorResponse] object
+Returns [DataOwnersOfDataValidatorResponse](https://github.com/Prometeus-Network/data-validator-node/blob/develop/backend/docs/api-types.md#dataownersofdatavalidatorresponse) object
 
 ### Get balance of account
 
@@ -71,7 +71,7 @@ GET /api/v3/accounts/:address/balance
 
 #### Response type
 
-Returns [BalanceResponse] object
+Returns [BalanceResponse](https://github.com/Prometeus-Network/data-validator-node/blob/develop/backend/docs/api-types.md#balanceresponse) object
 
 ### Get balances of all accounts
 
@@ -85,5 +85,5 @@ GET /api/v3/accounts/balances
 
 #### Response type
 
-Returns [BalancesResponse] object where key is wallet address and value is its balance
+Returns [BalancesResponse](https://github.com/Prometeus-Network/data-validator-node/blob/develop/backend/docs/api-types.md#balancesresponse) object where key is wallet address and value is its balance
 

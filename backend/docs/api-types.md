@@ -2,12 +2,21 @@
 
 ## Table of contents
 
+- [AccountResponse](#accountresponse)
 - [FileMetadata](#filemetadata)
 - [FileResponse](#fileresponse)
 - [DataOwnerResponse](#dataownerresponse)
 - [DataOwnersOfDataValidatorResponse](#dataownersofdatavalidatorresponse)
 - [BalanceResponse](#balanceresponse)
 - [BalancesResponse](#balancesresponse)
+
+### AccountResponse
+
+````
+{
+    address: string
+}
+````
 
 ### FileMetadata
 
