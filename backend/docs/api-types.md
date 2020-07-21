@@ -9,6 +9,8 @@
 - [DataOwnersOfDataValidatorResponse](#dataownersofdatavalidatorresponse)
 - [BalanceResponse](#balanceresponse)
 - [BalancesResponse](#balancesresponse)
+- [ServiceNodeFileResponse](#servicenodefileresponse)
+- [FileUploadStatusResponse](#fileuploadstatusresponse)
 
 ### AccountResponse
 
@@ -77,5 +79,32 @@
 ````
 {
     [address: string]: number
+}
+````
+
+### ServiceNodeFileResponse
+
+````
+{
+    id: string, //ID assigned by Service Node
+    name: string,
+    extension: string,
+    mimeType: string,
+    size: number,
+    metadata: FileMetadata,
+    deletedLocally: boolean
+}
+````
+
+### FileUploadStatusResponse
+
+````
+{
+    fullyUploaded: boolean, //Whether file has been uploaded to DDS
+    failed: boolean, //Whether file uploading failed
+    ddsFileId?: string, //ID assigned by DDS
+    price?: number, //Price of the file
+    dataOwner?: string, //Created data owner account
+    privateKey?: string //Private key of the file
 }
 ````
