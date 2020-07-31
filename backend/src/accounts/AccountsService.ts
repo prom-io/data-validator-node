@@ -1,4 +1,5 @@
 import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
+import uuid from "uuid/v4";
 import {AccountsRepository} from "./AccountsRepository";
 import {accountToAccountResponse} from "./account-mappers";
 import {AccountType} from "./types";
@@ -9,17 +10,61 @@ import {RegisterAccountRequest, ServiceNodeApiClient} from "../service-node-api"
 import {EntityType} from "../nedb/entity";
 import {Web3Wrapper} from "../web3";
 import {AccountRegistrationStatusResponse} from "../service-node-api/types/response";
+import {User} from "./types/entity";
+import {WalletGeneratorApiClient} from "../wallet-generator/WalletGeneratorApiClient";
+import {UsersRepository} from "./UsersRepository";
+import {BCryptPasswordEncoder} from "../bcrypt";
 
 @Injectable()
 export class AccountsService {
     constructor(private readonly accountsRepository: AccountsRepository,
+                private readonly usersRepository: UsersRepository,
                 private readonly serviceNodeClient: ServiceNodeApiClient,
+                private readonly walletGeneratorApiClient: WalletGeneratorApiClient,
+                private readonly passwordEncoder: BCryptPasswordEncoder,
                 private readonly web3Wrapper: Web3Wrapper) {
     }
 
     public async createDataValidatorAccount(createDataValidatorAccountRequest: CreateDataValidatorRequest): Promise<void> {
+
+        if (!createDataValidatorAccountRequest.address && !createDataValidatorAccountRequest.lambdaWallet) {
+            throw new HttpException(
+                `Either lambdaWallet or address properties must be specified`,
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
         try {
             const defaultAccount: boolean = (await this.accountsRepository.findAll()).filter(account => account.default).length === 0;
+
+            let userId: string | undefined;
+            let user: User | undefined;
+
+            if (createDataValidatorAccountRequest.lambdaWallet) {
+                user = await this.usersRepository.findByLambdaAddress(createDataValidatorAccountRequest.lambdaWallet);
+
+                if (user) {
+                    throw new HttpException(
+                        `Lambda wallet ${createDataValidatorAccountRequest.lambdaWallet} is already in use`,
+                        HttpStatus.CONFLICT
+                    );
+                } else {
+                    user = {
+                        _id: uuid(),
+                        _type: EntityType.USER,
+                        lambdaWallet: createDataValidatorAccountRequest.lambdaWallet,
+                        passwordHash: await this.passwordEncoder.encode(createDataValidatorAccountRequest.password)
+                    };
+                    userId = user._id;
+                }
+            }
+
+            if (!createDataValidatorAccountRequest.address) {
+                const wallet = await this.walletGeneratorApiClient.generateWallet();
+                createDataValidatorAccountRequest.address = wallet.address;
+                createDataValidatorAccountRequest.privateKey = wallet.privateKey;
+            }
+
             const accountRegistrationStatusResponse: AccountRegistrationStatusResponse = (
                 await this.serviceNodeClient.isAccountRegistered(createDataValidatorAccountRequest.address)
             ).data;
@@ -44,15 +89,22 @@ export class AccountsService {
             const registerAccountRequest: RegisterAccountRequest = {
                 address: createDataValidatorAccountRequest.address,
                 type: AccountType.DATA_VALIDATOR,
+                lambdaWallet: createDataValidatorAccountRequest.lambdaWallet,
                 signature: null
             };
             registerAccountRequest.signature = this.web3Wrapper.signData(registerAccountRequest, createDataValidatorAccountRequest.privateKey);
             await this.serviceNodeClient.registerAccount(registerAccountRequest);
+
+            if (user) {
+                await this.usersRepository.save(user);
+            }
+
             await this.accountsRepository.save({
                 address: createDataValidatorAccountRequest.address,
                 privateKey: createDataValidatorAccountRequest.privateKey,
                 _type: EntityType.ACCOUNT,
-                default: defaultAccount
+                default: defaultAccount,
+                userId
             });
         } catch (error) {
             if (error instanceof HttpException) {

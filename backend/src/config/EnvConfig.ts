@@ -24,4 +24,13 @@ export class EnvConfig {
 
     @Env({type: "string"})
     LIBP2P_NODE_PORT: number = 12578;
+
+    @Env({type: "string", required: true})
+    PROMETEUS_WALLET_GENERATOR_API_USERNAME: string;
+
+    @Env({type: "string", required: true})
+    PROMETEUS_WALLET_GENERATOR_API_PASSWORD: string;
+
+    @Env({type: "string", required: true})
+    PROMETEUS_WALLET_GENERATOR_API_BASE_URL: string
 }

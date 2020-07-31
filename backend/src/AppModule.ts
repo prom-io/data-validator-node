@@ -9,6 +9,8 @@ import {Web3Module} from "./web3";
 import {EncryptorServiceModule} from "./encryptor";
 import {StatusCheckModule} from "./status-check";
 import {DefaultAccountProviderModule} from "./default-account-provider/DefaultAccountProviderModule";
+import {BCryptModule} from "./bcrypt";
+import {WalletGeneratorModule} from "./wallet-generator";
 
 @Module({
     imports: [
@@ -22,6 +24,8 @@ import {DefaultAccountProviderModule} from "./default-account-provider/DefaultAc
         Web3Module,
         EncryptorServiceModule,
         StatusCheckModule,
+        BCryptModule,
+        WalletGeneratorModule
     ]
 })
 export class AppModule {}

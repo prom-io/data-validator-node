@@ -27,7 +27,13 @@ export class AccountsRepository {
 
     public findByAddress(address: string): Promise<Account> {
         return new Promise<Account>(resolve => {
-            this.dataStore.findOne<Account>({_type: EntityType.ACCOUNT, address: address}, (_, document) => resolve(document));
+            this.dataStore.findOne<Account>({_type: EntityType.ACCOUNT, address}, (_, document) => resolve(document));
         })
+    }
+
+    public findByUserId(userId: string): Promise<Account[]> {
+        return new Promise<Account[]>(resolve => {
+            this.dataStore.find<Account>({_type: EntityType.ACCOUNT, userId}, (_, document) => resolve(document))
+        });
     }
 }
