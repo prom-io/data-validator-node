@@ -16,6 +16,8 @@ import {WalletGeneratorApiClient} from "../wallet-generator/WalletGeneratorApiCl
 import {UsersRepository} from "./UsersRepository";
 import {BCryptPasswordEncoder} from "../bcrypt";
 import {CurrentAccountResponse} from "./types/response/CurrentAccountResponse";
+import {AuthService} from "../jwt-auth/AuthService";
+import {AccessTokenResponse} from "../jwt-auth/types/response";
 
 @Injectable()
 export class AccountsService {
@@ -25,10 +27,11 @@ export class AccountsService {
                 private readonly walletGeneratorApiClient: WalletGeneratorApiClient,
                 private readonly passwordEncoder: BCryptPasswordEncoder,
                 private readonly web3Wrapper: Web3Wrapper,
+                private readonly authService: AuthService,
                 private readonly log: LoggerService) {
     }
 
-    public async createDataValidatorAccount(createDataValidatorAccountRequest: CreateDataValidatorRequest): Promise<void> {
+    public async createDataValidatorAccount(createDataValidatorAccountRequest: CreateDataValidatorRequest): Promise<void | (CurrentAccountResponse & AccessTokenResponse)> {
 
         if (!createDataValidatorAccountRequest.address && !createDataValidatorAccountRequest.lambdaWallet) {
             throw new HttpException(
@@ -102,13 +105,23 @@ export class AccountsService {
                 await this.usersRepository.save(user);
             }
 
-            await this.accountsRepository.save({
+            const account = await this.accountsRepository.save({
                 address: createDataValidatorAccountRequest.address,
                 privateKey: createDataValidatorAccountRequest.privateKey,
                 _type: EntityType.ACCOUNT,
                 default: defaultAccount,
                 userId
             });
+
+            if (user) {
+                const {accessToken} = await this.authService.login(user);
+
+                return {
+                    ethereumAddress: account.address,
+                    lambdaAddress: user.lambdaWallet,
+                    accessToken
+                };
+            }
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;

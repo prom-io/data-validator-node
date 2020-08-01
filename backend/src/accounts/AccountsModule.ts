@@ -10,6 +10,7 @@ import {Web3Module} from "../web3";
 import {UsersRepository} from "./UsersRepository";
 import {WalletGeneratorApiClient} from "../wallet-generator/WalletGeneratorApiClient";
 import {WalletGeneratorModule} from "../wallet-generator";
+import {AuthModule} from "../jwt-auth";
 
 @Module({
     controllers: [AccountsController],
@@ -21,7 +22,12 @@ import {WalletGeneratorModule} from "../wallet-generator";
         InitialAccountRegistrationHandler,
         UsersRepository
     ],
-    imports: [ServiceNodeApiClientModule, Web3Module, WalletGeneratorModule],
+    imports: [
+        ServiceNodeApiClientModule,
+        Web3Module,
+        WalletGeneratorModule,
+        forwardRef(() => AuthModule)
+    ],
     exports: [DataOwnersService, DataOwnersRepository, AccountsRepository, AccountsService, UsersRepository]
 })
 export class AccountsModule {}

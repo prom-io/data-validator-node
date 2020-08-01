@@ -7,6 +7,7 @@ import {CreateDataValidatorRequest, WithdrawFundsRequest} from "./types/request"
 import {AccountResponse, BalanceResponse, BalancesResponse, DataOwnersOfDataValidatorResponse} from "./types/response";
 import {CurrentAccountResponse} from "./types/response/CurrentAccountResponse";
 import {User} from "./types/entity";
+import {AccessTokenResponse} from "../jwt-auth/types/response";
 
 @Controller("api/v3/accounts")
 export class AccountsController {
@@ -31,7 +32,7 @@ export class AccountsController {
     }
 
     @Post()
-    public createDataValidator(@Body() createDataValidatorRequest: CreateDataValidatorRequest): Promise<void> {
+    public createDataValidator(@Body() createDataValidatorRequest: CreateDataValidatorRequest): Promise<void | (CurrentAccountResponse & AccessTokenResponse)> {
         return this.accountsService.createDataValidatorAccount(createDataValidatorRequest);
     }
 
