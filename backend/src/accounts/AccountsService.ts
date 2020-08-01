@@ -14,6 +14,7 @@ import {User} from "./types/entity";
 import {WalletGeneratorApiClient} from "../wallet-generator/WalletGeneratorApiClient";
 import {UsersRepository} from "./UsersRepository";
 import {BCryptPasswordEncoder} from "../bcrypt";
+import {CurrentAccountResponse} from "./types/response/CurrentAccountResponse";
 
 @Injectable()
 export class AccountsService {
@@ -220,5 +221,18 @@ export class AccountsService {
         }
 
         return accountToAccountResponse(defaultAccount);
+    }
+
+    public async getCurrentAccount(user: User): Promise<CurrentAccountResponse> {
+        const ethereumAccount = (await this.accountsRepository.findByUserId(user._id))[0];
+
+        return {
+            lambdaAddress: user.lambdaWallet,
+            ethereumAddress: ethereumAccount.address
+        };
+    }
+
+    public async getBalanceOfCurrentAccount(user: User): Promise<BalanceResponse> {
+        return (await this.serviceNodeClient.getBalanceOfLambdaWallet(user.lambdaWallet)).data;
     }
 }

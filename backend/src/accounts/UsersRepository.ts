@@ -24,5 +24,11 @@ export class UsersRepository {
         return new Promise<User | null>(resolve => {
             this.dataStore.findOne<User | null>({_type: EntityType.USER, lambdaAddress}, (_, document) => resolve(document));
         })
+    };
+
+    public findById(id: string): Promise<User | null> {
+        return new Promise<User | null>(resolve => {
+            this.dataStore.findOne<User | null>({_type: EntityType.USER, _id: id}, (_, document) => resolve(document));
+        })
     }
 }

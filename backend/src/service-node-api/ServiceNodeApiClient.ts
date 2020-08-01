@@ -74,6 +74,10 @@ export class ServiceNodeApiClient {
         return this.axios.patch(`${this.getUrl()}/api/v1/files/${fileId}`, extendFileStorageDurationRequest);
     }
 
+    public getBalanceOfLambdaWallet(address: string): AxiosPromise<BalanceResponse> {
+        return this.axios.get(`${this.getUrl()}/api/v1/accounts/lambda/${address}/balance`);
+    }
+
     private getUrl(): string {
         const serviceNodeInstance = this.loadBalancerClient.getServiceNodeInstance();
         this.log.debug(`Chosen Service node instance IP: ${serviceNodeInstance.ipAddress}`);
