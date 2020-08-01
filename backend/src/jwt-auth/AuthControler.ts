@@ -4,7 +4,7 @@ import {Request} from "express";
 import {AuthService} from "./AuthService";
 import {User} from "../accounts/types/entity";
 
-@Controller("api/v2/auth")
+@Controller("api/v3/auth")
 export class AuthController {
     constructor(private readonly authService: AuthService) {
     }

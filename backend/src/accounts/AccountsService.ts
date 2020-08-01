@@ -42,7 +42,7 @@ export class AccountsService {
             let user: User | undefined;
 
             if (createDataValidatorAccountRequest.lambdaWallet) {
-                user = await this.usersRepository.findByLambdaAddress(createDataValidatorAccountRequest.lambdaWallet);
+                user = await this.usersRepository.findByLambdaWallet(createDataValidatorAccountRequest.lambdaWallet);
 
                 if (user) {
                     throw new HttpException(

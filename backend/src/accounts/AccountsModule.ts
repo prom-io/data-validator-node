@@ -22,6 +22,6 @@ import {WalletGeneratorModule} from "../wallet-generator";
         UsersRepository
     ],
     imports: [ServiceNodeApiClientModule, Web3Module, WalletGeneratorModule],
-    exports: [DataOwnersService, DataOwnersRepository, AccountsRepository, AccountsService]
+    exports: [DataOwnersService, DataOwnersRepository, AccountsRepository, AccountsService, UsersRepository]
 })
 export class AccountsModule {}

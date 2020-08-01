@@ -11,6 +11,7 @@ import {StatusCheckModule} from "./status-check";
 import {DefaultAccountProviderModule} from "./default-account-provider/DefaultAccountProviderModule";
 import {BCryptModule} from "./bcrypt";
 import {WalletGeneratorModule} from "./wallet-generator";
+import {AuthModule} from "./jwt-auth";
 
 @Module({
     imports: [
@@ -25,7 +26,8 @@ import {WalletGeneratorModule} from "./wallet-generator";
         EncryptorServiceModule,
         StatusCheckModule,
         BCryptModule,
-        WalletGeneratorModule
+        WalletGeneratorModule,
+        AuthModule
     ]
 })
 export class AppModule {}

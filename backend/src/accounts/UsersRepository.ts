@@ -20,9 +20,9 @@ export class UsersRepository {
         })
     };
 
-    public findByLambdaAddress(lambdaAddress: string): Promise<User | null> {
+    public findByLambdaWallet(lambdaWallet: string): Promise<User | null> {
         return new Promise<User | null>(resolve => {
-            this.dataStore.findOne<User | null>({_type: EntityType.USER, lambdaAddress}, (_, document) => resolve(document));
+            this.dataStore.findOne<User | null>({_type: EntityType.USER, lambdaWallet}, (_, document) => resolve(document));
         })
     };
 

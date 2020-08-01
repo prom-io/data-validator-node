@@ -14,7 +14,7 @@ export class AuthService {
     }
 
     public async validate(username: string, password: string): Promise<User | null> {
-        const user = await this.usersRepository.findByLambdaAddress(username);
+        const user = await this.usersRepository.findByLambdaWallet(username);
 
         if (!user) {
             return null;

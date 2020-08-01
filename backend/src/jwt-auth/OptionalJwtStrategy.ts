@@ -23,7 +23,7 @@ export class OptionalJwtStrategy extends PassportStrategy(Strategy, "optionalJwt
         }
 
         try {
-            return await this.usersRepository.findByLambdaAddress(payload.lambdaAddress);
+            return await this.usersRepository.findByLambdaWallet(payload.lambdaAddress);
         } catch (error) {
             throw new UnauthorizedException();
         }
