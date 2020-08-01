@@ -1,10 +1,11 @@
 import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import uuid from "uuid/v4";
+import {LoggerService} from "nest-logger";
 import {AccountsRepository} from "./AccountsRepository";
 import {accountToAccountResponse} from "./account-mappers";
 import {AccountType} from "./types";
 import {AccountResponse, BalanceResponse, BalancesResponse, DataOwnersOfDataValidatorResponse} from "./types/response";
-import {CreateDataValidatorRequest, ICreateDataOwnerRequest} from "./types/request";
+import {CreateDataValidatorRequest, ICreateDataOwnerRequest, WithdrawFundsRequest} from "./types/request";
 import {NoAccountsRegisteredException} from "./NoAccountsRegisteredException";
 import {RegisterAccountRequest, ServiceNodeApiClient} from "../service-node-api";
 import {EntityType} from "../nedb/entity";
@@ -23,7 +24,8 @@ export class AccountsService {
                 private readonly serviceNodeClient: ServiceNodeApiClient,
                 private readonly walletGeneratorApiClient: WalletGeneratorApiClient,
                 private readonly passwordEncoder: BCryptPasswordEncoder,
-                private readonly web3Wrapper: Web3Wrapper) {
+                private readonly web3Wrapper: Web3Wrapper,
+                private readonly log: LoggerService) {
     }
 
     public async createDataValidatorAccount(createDataValidatorAccountRequest: CreateDataValidatorRequest): Promise<void> {
@@ -234,5 +236,41 @@ export class AccountsService {
 
     public async getBalanceOfCurrentAccount(user: User): Promise<BalanceResponse> {
         return (await this.serviceNodeClient.getBalanceOfLambdaWallet(user.lambdaWallet)).data;
+    }
+
+    public async withdrawFunds(withdrawFundsRequest: WithdrawFundsRequest, user: User): Promise<void> {
+        const ethereumAccount = (await this.accountsRepository.findByUserId(user._id))[0];
+
+        const {balance} = (await this.serviceNodeClient.getBalanceOfLambdaWallet(user.lambdaWallet)).data;
+
+        if (withdrawFundsRequest.amount > balance) {
+            throw new HttpException(
+                `Request was made to withdraw ${withdrawFundsRequest.amount}, but account's balance is ${balance}`,
+                HttpStatus.PAYMENT_REQUIRED
+            );
+        }
+
+        try {
+            await this.serviceNodeClient.withdrawFunds({
+                ethereumAddress: ethereumAccount.address,
+                amount: withdrawFundsRequest.amount
+            });
+        } catch (error) {
+            console.log(error);
+
+            if (error.response) {
+                this.log.error(`Could not withdraw funds, Service Node responded with ${error.response.status} status`);
+                throw new HttpException(
+                    `Could not withdraw funds, Service Node responded with ${error.response.status} status`,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            } else {
+                this.log.error("Could not withdraw funds, Service Node is unreachable");
+                throw new HttpException(
+                    "Could not withdraw funds, Service Node is unreachable",
+                    HttpStatus.SERVICE_UNAVAILABLE
+                );
+            }
+        }
     }
 }

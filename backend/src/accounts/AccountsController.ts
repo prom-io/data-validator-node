@@ -3,7 +3,7 @@ import {AuthGuard} from "@nestjs/passport";
 import {Request} from "express";
 import {AccountsService} from "./AccountsService";
 import {DataOwnersService} from "./DataOwnersService";
-import {CreateDataValidatorRequest} from "./types/request";
+import {CreateDataValidatorRequest, WithdrawFundsRequest} from "./types/request";
 import {AccountResponse, BalanceResponse, BalancesResponse, DataOwnersOfDataValidatorResponse} from "./types/response";
 import {CurrentAccountResponse} from "./types/response/CurrentAccountResponse";
 import {User} from "./types/entity";
@@ -50,5 +50,12 @@ export class AccountsController {
     @Get("balances")
     public getBalancesOfAllAccounts(): Promise<BalancesResponse> {
         return this.accountsService.getBalancesOfAllAccounts();
+    }
+
+    @UseGuards(AuthGuard("jwt"))
+    @Post("withdraw")
+    public withdrawFunds(@Body() withdrawFundsRequest: WithdrawFundsRequest,
+                         @Req() request: Request): Promise<void> {
+        return this.accountsService.withdrawFunds(withdrawFundsRequest, (request as any).user as User);
     }
 }

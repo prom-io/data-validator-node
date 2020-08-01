@@ -1,7 +1,7 @@
 import {Inject, Injectable} from "@nestjs/common";
 import {AxiosInstance, AxiosPromise} from "axios";
 import {LoggerService} from "nest-logger";
-import {RegisterAccountRequest, SignedRequest} from "./types/request";
+import {RegisterAccountRequest, ServiceNodeWithdrawFundsRequest, SignedRequest} from "./types/request";
 import {AccountRegistrationStatusResponse} from "./types/response";
 import {BalanceResponse, DataOwnersOfDataValidatorResponse} from "../accounts/types/response";
 import {CheckFileUploadStatusResponse, DdsFileResponse, ServiceNodeFileResponse} from "../files/types/response";
@@ -76,6 +76,10 @@ export class ServiceNodeApiClient {
 
     public getBalanceOfLambdaWallet(address: string): AxiosPromise<BalanceResponse> {
         return this.axios.get(`${this.getUrl()}/api/v1/accounts/lambda/${address}/balance`);
+    }
+
+    public withdrawFunds(serviceNodeWithdrawFundsRequest: ServiceNodeWithdrawFundsRequest): AxiosPromise<void> {
+        return this.axios.post(`${this.getUrl()}/api/v1/accounts/withdraw`, serviceNodeWithdrawFundsRequest);
     }
 
     private getUrl(): string {
