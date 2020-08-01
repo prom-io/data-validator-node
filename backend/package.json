@@ -55,6 +55,7 @@
     "nedb": "^1.8.0",
     "nest-logger": "^2.1.0",
     "nest-schedule": "^0.6.4",
+    "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "peer-info": "^0.17.5",

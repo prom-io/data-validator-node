@@ -12,6 +12,8 @@
 - [ServiceNodeFileResponse](#servicenodefileresponse)
 - [FileUploadStatusResponse](#fileuploadstatusresponse)
 - [TransactionResponse](#transactionresponse)
+- [CurrentAccountResponse](#currentaccountresponse)
+- [AccessTokenResponse](#accesstokenresponse)
 
 ### AccountResponse
 
@@ -122,5 +124,22 @@
     createdAt: string,
     type: "dataUpload" | "dataPurchase",
     serviceNode: string
+}
+````
+
+### CurrentAccountResponse
+
+````
+{
+    lambdaAddress: string,
+    ethereumAddress: string
+}
+````
+
+### AccessTokenResponse 
+
+````
+{
+    accessToken: string
 }
 ````
