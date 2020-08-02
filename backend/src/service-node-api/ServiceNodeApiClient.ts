@@ -82,6 +82,10 @@ export class ServiceNodeApiClient {
         return this.axios.post(`${this.getUrl()}/api/v1/accounts/withdraw`, serviceNodeWithdrawFundsRequest);
     }
 
+    public isLambdaWalletRegistered(lambdaWallet: string): AxiosPromise<Omit<AccountRegistrationStatusResponse, "role">> {
+        return this.axios.get(`${this.getUrl()}/api/v1/accounts/lambda/${lambdaWallet}/is-registered`);
+    }
+
     private getUrl(): string {
         const serviceNodeInstance = this.loadBalancerClient.getServiceNodeInstance();
         this.log.debug(`Chosen Service node instance IP: ${serviceNodeInstance.ipAddress}`);

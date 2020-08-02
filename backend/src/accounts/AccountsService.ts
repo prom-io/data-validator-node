@@ -55,6 +55,17 @@ export class AccountsService {
                         HttpStatus.CONFLICT
                     );
                 } else {
+                    const accountRegistrationStatus = (
+                        await this.serviceNodeClient.isLambdaWalletRegistered(createDataValidatorAccountRequest.lambdaWallet)
+                    ).data;
+
+                    if (accountRegistrationStatus.registered) {
+                        throw new HttpException(
+                            `Lambda wallet ${createDataValidatorAccountRequest.lambdaWallet} is already in use`,
+                            HttpStatus.CONFLICT
+                        );
+                    }
+
                     user = {
                         _id: uuid(),
                         _type: EntityType.USER,
