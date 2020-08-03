@@ -4,7 +4,14 @@ import {LoggerService} from "nest-logger";
 import {AccountsRepository} from "./AccountsRepository";
 import {accountToAccountResponse} from "./account-mappers";
 import {AccountType} from "./types";
-import {AccountResponse, BalanceResponse, BalancesResponse, DataOwnersOfDataValidatorResponse} from "./types/response";
+import {
+    AccountResponse,
+    BalanceResponse,
+    BalancesResponse,
+    DataOwnersOfDataValidatorResponse,
+    LambdaTransactionResponse,
+    LambdaTransactionType
+} from "./types/response";
 import {CreateDataValidatorRequest, ICreateDataOwnerRequest, WithdrawFundsRequest} from "./types/request";
 import {NoAccountsRegisteredException} from "./NoAccountsRegisteredException";
 import {RegisterAccountRequest, ServiceNodeApiClient} from "../service-node-api";
@@ -134,6 +141,7 @@ export class AccountsService {
                 };
             }
         } catch (error) {
+            console.log(error);
             if (error instanceof HttpException) {
                 throw error;
             }
@@ -296,5 +304,23 @@ export class AccountsService {
                 );
             }
         }
+    }
+
+    public async getLambdaTransactions(user: User): Promise<LambdaTransactionResponse[]> {
+        const lambdaTransactions = (await this.serviceNodeClient.getTransactionsOfLambdaWallet(user.lambdaWallet)).data;
+
+        return lambdaTransactions.map(lambdaTransaction => {
+            const transactionSender = lambdaTransaction.tx.value.msg.map(message => message.value.from_address)[0];
+            const type = transactionSender === user.lambdaWallet ? LambdaTransactionType.UNLOCK : LambdaTransactionType.LOCK;
+
+            const transactionValue = lambdaTransaction.tx.value.msg.map(message => Number(message.value.amount[0].amount))[0] / (10 ** 10);
+
+            return {
+                hash: lambdaTransaction.txhash,
+                timestamp: lambdaTransaction.timestamp,
+                type,
+                value: transactionValue
+            }
+        });
     }
 }

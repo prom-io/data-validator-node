@@ -2,7 +2,7 @@ import {Inject, Injectable} from "@nestjs/common";
 import {AxiosInstance, AxiosPromise} from "axios";
 import {LoggerService} from "nest-logger";
 import {RegisterAccountRequest, ServiceNodeWithdrawFundsRequest, SignedRequest} from "./types/request";
-import {AccountRegistrationStatusResponse} from "./types/response";
+import {AccountRegistrationStatusResponse, ServiceNodeLambdaTransactionResponse} from "./types/response";
 import {BalanceResponse, DataOwnersOfDataValidatorResponse} from "../accounts/types/response";
 import {CheckFileUploadStatusResponse, DdsFileResponse, ServiceNodeFileResponse} from "../files/types/response";
 import {ExtendFileStorageDurationRequest, ICreateServiceNodeFileRequest, IUploadChunkRequest} from "../files/types/request"
@@ -84,6 +84,10 @@ export class ServiceNodeApiClient {
 
     public isLambdaWalletRegistered(lambdaWallet: string): AxiosPromise<Omit<AccountRegistrationStatusResponse, "role">> {
         return this.axios.get(`${this.getUrl()}/api/v1/accounts/lambda/${lambdaWallet}/is-registered`);
+    }
+
+    public getTransactionsOfLambdaWallet(lambdaWallet: string): AxiosPromise<ServiceNodeLambdaTransactionResponse[]> {
+        return this.axios.get(`${this.getUrl()}/api/v1/accounts/lambda/${lambdaWallet}/transactions`);
     }
 
     private getUrl(): string {

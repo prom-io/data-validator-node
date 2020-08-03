@@ -4,7 +4,7 @@ import {Request} from "express";
 import {AccountsService} from "./AccountsService";
 import {DataOwnersService} from "./DataOwnersService";
 import {CreateDataValidatorRequest, WithdrawFundsRequest} from "./types/request";
-import {AccountResponse, BalanceResponse, BalancesResponse, DataOwnersOfDataValidatorResponse} from "./types/response";
+import {AccountResponse, BalanceResponse, BalancesResponse, DataOwnersOfDataValidatorResponse, LambdaTransactionResponse} from "./types/response";
 import {CurrentAccountResponse} from "./types/response/CurrentAccountResponse";
 import {User} from "./types/entity";
 import {AccessTokenResponse} from "../jwt-auth/types/response";
@@ -29,6 +29,12 @@ export class AccountsController {
     @Get("current/balance")
     public getBalanceOfCurrentAccount(@Req() request: Request): Promise<BalanceResponse> {
         return this.accountsService.getBalanceOfCurrentAccount((request as any).user as User);
+    }
+
+    @UseGuards(AuthGuard("jwt"))
+    @Get("current/lambda-transactions")
+    public getLambdaTransactions(@Req() request: Request): Promise<LambdaTransactionResponse[]> {
+        return this.accountsService.getLambdaTransactions((request as any).user as User);
     }
 
     @Post()
