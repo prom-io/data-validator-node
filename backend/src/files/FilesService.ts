@@ -10,7 +10,7 @@ import {
     PurchaseFileRequestSignature,
     UploadChunkRequest
 } from "./types/request";
-import {CheckFileUploadStatusResponse, FileResponse, ServiceNodeFileResponse} from "./types/response";
+import {CheckFileUploadStatusResponse, FilePriceAndKeepUntilMap, FileResponse, ServiceNodeFileResponse} from "./types/response";
 import {FilesRepository} from "./FilesRepository";
 import {ServiceNodeTemporaryFilesRepository} from "./ServiceNodeTemporaryFilesRepository";
 import {fileToFileResponse} from "./file-mappers";
@@ -254,7 +254,7 @@ export class FilesService {
             );
         }
 
-        if (!this.checkFilePurchaseStatus(fileId, purchaseFileRequestSignature.address)) {
+        if (!await this.checkFilePurchaseStatus(fileId, purchaseFileRequestSignature.address)) {
             throw new HttpException(
                 `File with id ${fileId} has not been purchased by ${purchaseFileRequestSignature.address}`,
                 HttpStatus.FORBIDDEN
@@ -262,6 +262,20 @@ export class FilesService {
         }
 
         return file.fileKey;
+    }
+
+    public async getPriceAndKeepUntilMap(ids: string[]): Promise<FilePriceAndKeepUntilMap> {
+        const filePriceAndKeepUntilMap: FilePriceAndKeepUntilMap = {};
+        const files = await this.filesRepository.findByIdIn(ids);
+
+        files.forEach(file => {
+            filePriceAndKeepUntilMap[file.id] = {
+                keepUntil: file.keepUntil,
+                price: file.price
+            };
+        });
+
+        return filePriceAndKeepUntilMap;
     }
 
     private async checkFilePurchaseStatus(fileId: string, dataMartAddress: string): Promise<boolean> {

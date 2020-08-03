@@ -1,7 +1,13 @@
-import {Controller, Body, Param, Post, Get, Delete, Patch, Query} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query} from "@nestjs/common";
 import {FilesService} from "./FilesService";
-import {CreateServiceNodeFileRequest, ExtendFileStorageDurationRequest, PurchaseFileRequestSignature, UploadChunkRequest} from "./types/request";
-import {CheckFileUploadStatusResponse, FileResponse, ServiceNodeFileResponse} from "./types/response";
+import {
+    CreateServiceNodeFileRequest,
+    ExtendFileStorageDurationRequest,
+    FilePriceAndKeepUntilMapRequest,
+    PurchaseFileRequestSignature,
+    UploadChunkRequest
+} from "./types/request";
+import {CheckFileUploadStatusResponse, FilePriceAndKeepUntilMap, FileResponse, ServiceNodeFileResponse} from "./types/response";
 import {decodeUrlEncodedObjectProperties} from "../utils/decode-url";
 
 @Controller("api/v3/files")
@@ -19,6 +25,13 @@ export class FilesController {
         @Body() uploadChunkRequest: UploadChunkRequest
     ): Promise<void> {
         return this.filesService.uploadLocalFileChunk(localFileId, uploadChunkRequest);
+    }
+
+    @Get("price-and-keep-until-map")
+    public getFilePriceAndKeepUntilMap(
+        @Query() filePriceAndKeepUntilMapRequest: FilePriceAndKeepUntilMapRequest
+    ): Promise<FilePriceAndKeepUntilMap> {
+        return this.filesService.getPriceAndKeepUntilMap(filePriceAndKeepUntilMapRequest.filesIds);
     }
 
     @Get(":fileId")

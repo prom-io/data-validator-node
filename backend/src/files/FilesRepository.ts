@@ -33,4 +33,18 @@ export class FilesRepository {
             )
         })
     }
+
+    public findByIdIn(ids: string[]): Promise<File[]> {
+        return new Promise<File[]>(resolve => {
+            this.dataStore.find<File>(
+                {
+                    _type: EntityType.FILE,
+                    id: {
+                        $in: ids
+                    }
+                },
+                (_, documents) => resolve(documents)
+            )
+        });
+    }
 }
