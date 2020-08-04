@@ -9,5 +9,6 @@ export const fileToFileResponse = (file: File): FileResponse => ({
     keepUntil: file.keepUntil,
     mimeType: file.mimeType,
     price: file.price,
-    size: file.size
+    size: file.size,
+    name: file.name
 });

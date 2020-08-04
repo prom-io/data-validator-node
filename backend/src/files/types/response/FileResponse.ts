@@ -8,5 +8,6 @@ export interface FileResponse {
     mimeType: string,
     size: number,
     price: number,
-    fileMetadata: FileMetadata
+    fileMetadata: FileMetadata,
+    name?: string
 }
