@@ -1,4 +1,5 @@
 import {Injectable} from "@nestjs/common";
+import {LoggerService} from "nest-logger";
 import {ServiceNodeTransactionResponse, TransactionResponse, TransactionType} from "./types/response";
 import {DataOwnerResponse} from "../accounts/types/response";
 import {DataOwnersService} from "../accounts/DataOwnersService";
@@ -9,7 +10,8 @@ import {ServiceNodeApiClient} from "../service-node-api";
 export class TransactionsService {
     constructor(private readonly dataOwnersService: DataOwnersService,
                 private readonly filesService: FilesService,
-                private readonly serviceNodeApiClient: ServiceNodeApiClient) {
+                private readonly serviceNodeApiClient: ServiceNodeApiClient,
+                private readonly log: LoggerService) {
     }
 
     // tslint:disable-next-line:max-line-length
@@ -54,6 +56,8 @@ export class TransactionsService {
                     type: transaction.type,
                     serviceNode: transaction.serviceNode
                 })
+            } else {
+                this.log.info(`Data owner ${transaction.dataOwner} is not present in local database`);
             }
         }
 
