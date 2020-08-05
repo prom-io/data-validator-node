@@ -313,7 +313,7 @@ export class AccountsService {
             const transactionSender = lambdaTransaction.tx.value.msg.map(message => message.value.from_address)[0];
             const type = transactionSender === user.lambdaWallet ? LambdaTransactionType.UNLOCK : LambdaTransactionType.LOCK;
 
-            const transactionValue = lambdaTransaction.tx.value.msg.map(message => Number(message.value.amount[0].amount))[0] / (10 ** 10);
+            const transactionValue = lambdaTransaction.tx.value.msg.map(message => Number(message.value.amount[0].amount))[0] / (10 ** 6);
 
             return {
                 hash: lambdaTransaction.txhash,
