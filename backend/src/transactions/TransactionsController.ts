@@ -18,7 +18,7 @@ export class TransactionsController {
 
         if (type) {
             const transactionType: TransactionType = type === "dataUpload" ? TransactionType.DATA_UPLOAD : TransactionType.DATA_PURCHASE;
-            return this.transactionsService.getTransactionsByAddressAndType(address, transactionType, page, 200);
+            return this.transactionsService.getTransactionsByAddressAndType(address, transactionType, page, 50);
         } else {
             return this.transactionsService.getTransactionsByAddress(address, page, size);
         }
