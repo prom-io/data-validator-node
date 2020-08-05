@@ -36,4 +36,7 @@ export class EnvConfig {
 
     @Env({type: "string", required: true})
     JWT_SECRET: string;
+
+    @Env({type: "string", required: true})
+    SYSTEM_LAMBDA_WALLET: string;
 }

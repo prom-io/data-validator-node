@@ -25,6 +25,7 @@ import {BCryptPasswordEncoder} from "../bcrypt";
 import {CurrentAccountResponse} from "./types/response/CurrentAccountResponse";
 import {AuthService} from "../jwt-auth/AuthService";
 import {AccessTokenResponse} from "../jwt-auth/types/response";
+import {config} from "../config";
 
 @Injectable()
 export class AccountsService {
@@ -309,18 +310,25 @@ export class AccountsService {
     public async getLambdaTransactions(user: User): Promise<LambdaTransactionResponse[]> {
         const lambdaTransactions = (await this.serviceNodeClient.getTransactionsOfLambdaWallet(user.lambdaWallet)).data;
 
-        return lambdaTransactions.map(lambdaTransaction => {
-            const transactionSender = lambdaTransaction.tx.value.msg.map(message => message.value.from_address)[0];
-            const type = transactionSender === user.lambdaWallet ? LambdaTransactionType.UNLOCK : LambdaTransactionType.LOCK;
+        return lambdaTransactions
+            .filter(lambdaTransaction => {
+                const transactionSender = lambdaTransaction.tx.value.msg.map(message => message.value.from_address)[0];
+                const transactionReceiver = lambdaTransaction.tx.value.msg.map(message => message.value.to_address)[0];
 
-            const transactionValue = lambdaTransaction.tx.value.msg.map(message => Number(message.value.amount[0].amount))[0] / (10 ** 6);
+                return (transactionSender === user.lambdaWallet && transactionReceiver === config.SYSTEM_LAMBDA_WALLET)
+                    || (transactionSender === config.SYSTEM_LAMBDA_WALLET && transactionReceiver === user.lambdaWallet)
+            })
+            .map(lambdaTransaction => {
+                const transactionSender = lambdaTransaction.tx.value.msg.map(message => message.value.from_address)[0];
+                const type = transactionSender === user.lambdaWallet ? LambdaTransactionType.LOCK : LambdaTransactionType.UNLOCK;
+                const transactionValue = lambdaTransaction.tx.value.msg.map(message => Number(message.value.amount[0].amount))[0] / (10 ** 6);
 
-            return {
-                hash: lambdaTransaction.txhash,
-                timestamp: lambdaTransaction.timestamp,
-                type,
-                value: transactionValue
-            }
-        });
+                return {
+                    hash: lambdaTransaction.txhash,
+                    timestamp: lambdaTransaction.timestamp,
+                    type,
+                    value: transactionValue
+                }
+            });
     }
 }
