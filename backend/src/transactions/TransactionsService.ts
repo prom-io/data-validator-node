@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import {LoggerService} from "nest-logger";
 import {ServiceNodeTransactionResponse, TransactionResponse, TransactionType} from "./types/response";
 import {DataOwnerResponse} from "../accounts/types/response";
@@ -16,15 +16,28 @@ export class TransactionsService {
 
     // tslint:disable-next-line:max-line-length
     public async getTransactionsByAddressAndType(address: string, type: TransactionType, page: number, pageSize: number): Promise<TransactionResponse[]> {
-        return new Promise<TransactionResponse[]>(async resolve => {
-            const transactions: ServiceNodeTransactionResponse[] = (await this.serviceNodeApiClient.getTransactionsOfAddressByType(
-                address,
-                type,
-                page,
-                pageSize
-            )).data;
+        return new Promise<TransactionResponse[]>(async (resolve, reject) => {
+            try {
+                const transactions: ServiceNodeTransactionResponse[] = (await this.serviceNodeApiClient.getTransactionsOfAddressByType(
+                    address,
+                    type,
+                    page,
+                    pageSize
+                )).data;
+                resolve(this.mapTransactionsAndDataOwners(transactions));
+            } catch (error) {
+                let errorMessage: string;
+                if (error.response) {
+                    errorMessage = `Error occurred when tried to fetch transactions, Service node responded with ${error.response.status} status`;
+                } else {
+                    errorMessage = "Unexpected error occurred";
+                }
 
-            resolve(this.mapTransactionsAndDataOwners(transactions));
+                this.log.error(errorMessage);
+                console.log(error);
+
+                reject(new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR));
+            }
         })
     }
 
